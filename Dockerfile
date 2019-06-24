@@ -59,8 +59,8 @@ COPY fluent-bit.conf \
      /fluent-bit/etc/
 
 FROM gcr.io/distroless/cc
-MAINTAINER Eduardo Silva <eduardo@treasure-data.com>
-LABEL Description="Fluent Bit docker image" Vendor="Fluent Organization" Version="1.1"
+MAINTAINER Amazon Web Services, Inc.
+LABEL Description="Fluent Bit Docker Image with AWS Plugins" Vendor="Amazon Web Services" Version="1.0"
 
 COPY --from=builder /usr/lib/x86_64-linux-gnu/*sasl* /usr/lib/x86_64-linux-gnu/
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libz* /usr/lib/x86_64-linux-gnu/
@@ -77,9 +77,11 @@ COPY --from=builder /lib/x86_64-linux-gnu/libpcre.so* /lib/x86_64-linux-gnu/
 COPY --from=builder /lib/x86_64-linux-gnu/libgpg-error.so* /lib/x86_64-linux-gnu/
 
 COPY --from=builder /fluent-bit /fluent-bit
+COPY ./bin/firehose.so /firehose.so
+COPY ./bin/cloudwatch.so /cloudwatch.so
 
 #
 EXPOSE 2020
 
 # Entry point
-CMD ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
+CMD ["/fluent-bit/bin/fluent-bit", "-e", "/firehose.so", "-e", "/cloudwatch.so", "-c", "/fluent-bit/etc/fluent-bit.conf"]
