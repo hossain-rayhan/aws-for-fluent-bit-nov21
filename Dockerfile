@@ -11,7 +11,7 @@ ENV FLB_VERSION 1.1.3
 ENV DEBIAN_FRONTEND noninteractive
 
 ENV FLB_TARBALL http://github.com/fluent/fluent-bit/archive/v$FLB_VERSION.zip
-RUN mkdir -p /fluent-bit/bin /fluent-bit/etc /fluent-bit/log /tmp/fluent-bit-master/
+RUN mkdir -p /fluent/bin /fluent/etc /fluent/log /tmp/fluent-bit-master/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -46,17 +46,13 @@ RUN cmake -DFLB_DEBUG=On \
           -DFLB_OUT_KAFKA=On ..
 
 RUN make -j $(getconf _NPROCESSORS_ONLN)
-RUN install bin/fluent-bit /fluent-bit/bin/
+RUN install bin/fluent-bit /fluent/bin/
 
 # Configuration files
-COPY fluent-bit.conf \
-     parsers.conf \
-     parsers_java.conf \
-     parsers_extra.conf \
-     parsers_openstack.conf \
-     parsers_cinder.conf \
-     plugins.conf \
-     /fluent-bit/etc/
+COPY fluent.conf \
+     /fluent/etc/
+
+COPY plugins.conf /plugins.conf
 
 FROM gcr.io/distroless/cc
 MAINTAINER Amazon Web Services, Inc.
@@ -76,7 +72,7 @@ COPY --from=builder /lib/x86_64-linux-gnu/libgcrypt.so* /lib/x86_64-linux-gnu/
 COPY --from=builder /lib/x86_64-linux-gnu/libpcre.so* /lib/x86_64-linux-gnu/
 COPY --from=builder /lib/x86_64-linux-gnu/libgpg-error.so* /lib/x86_64-linux-gnu/
 
-COPY --from=builder /fluent-bit /fluent-bit
+COPY --from=builder /fluent /fluent
 COPY ./bin/firehose.so /firehose.so
 COPY ./bin/cloudwatch.so /cloudwatch.so
 
@@ -84,4 +80,4 @@ COPY ./bin/cloudwatch.so /cloudwatch.so
 EXPOSE 2020
 
 # Entry point
-CMD ["/fluent-bit/bin/fluent-bit", "-e", "/firehose.so", "-e", "/cloudwatch.so", "-c", "/fluent-bit/etc/fluent-bit.conf"]
+CMD ["/fluent/bin/fluent-bit", "-c", "-e", "/firehose.so", "-e", "/cloudwatch.so", "/fluent/etc/fluent.conf"]

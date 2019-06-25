@@ -12,6 +12,8 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
+set -xeuo pipefail
+
 # Normalize to working directory being build root (up one level from ./scripts)
 ROOT=$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )
 cd "${ROOT}"
@@ -25,6 +27,7 @@ git clone --quiet https://github.com/aws/amazon-cloudwatch-logs-for-fluent-bit.g
 cd $tmpdir/firehose
 make
 cd $tmpdir/cloudwatch
+git fetch && git checkout pr
 make
 
 # copy plugin .so files to ./bin
