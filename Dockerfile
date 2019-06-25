@@ -80,4 +80,4 @@ COPY ./bin/cloudwatch.so /cloudwatch.so
 EXPOSE 2020
 
 # Entry point
-CMD ["/fluent/bin/fluent-bit", "-c", "-e", "/firehose.so", "-e", "/cloudwatch.so", "/fluent/etc/fluent.conf"]
+CMD ["/fluent/bin/fluent-bit", "-e", "/firehose.so", "-e", "/cloudwatch.so", "-c", "/fluent/etc/fluent.conf"]
