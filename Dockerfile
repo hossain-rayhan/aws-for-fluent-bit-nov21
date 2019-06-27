@@ -1,6 +1,4 @@
-# Based on https://github.com/fluent/fluent-bit-docker-image
-
-FROM debian:stretch as builder
+FROM amazonlinux:latest as builder
 
 # Fluent Bit version
 ENV FLB_MAJOR 1
@@ -8,15 +6,15 @@ ENV FLB_MINOR 1
 ENV FLB_PATCH 3
 ENV FLB_VERSION 1.1.3
 
-ENV DEBIAN_FRONTEND noninteractive
-
 ENV FLB_TARBALL http://github.com/fluent/fluent-bit/archive/v$FLB_VERSION.zip
-RUN mkdir -p /fluent/bin /fluent/etc /fluent/log /tmp/fluent-bit-master/
+RUN mkdir -p /fluent-bit/bin /fluent-bit/etc /fluent-bit/log /tmp/fluent-bit-master/
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN yum upgrade -y && \
+    yum install -y  \
       build-essential \
-      cmake \
+      cmake3 \
+      gcc \
+      gcc-c++ \
       make \
       wget \
       unzip \
@@ -29,6 +27,11 @@ RUN apt-get update && \
       ca-certificates \
       flex \
       bison \
+    && alternatives --install /usr/local/bin/cmake cmake /usr/bin/cmake3 20 \
+      --slave /usr/local/bin/ctest ctest /usr/bin/ctest3 \
+      --slave /usr/local/bin/cpack cpack /usr/bin/cpack3 \
+      --slave /usr/local/bin/ccmake ccmake /usr/bin/ccmake3 \
+      --family cmake \
     && wget -O "/tmp/fluent-bit-${FLB_VERSION}.zip" ${FLB_TARBALL} \
     && cd /tmp && unzip "fluent-bit-$FLB_VERSION.zip" \
     && cd "fluent-bit-$FLB_VERSION"/build/ \
@@ -46,38 +49,17 @@ RUN cmake -DFLB_DEBUG=On \
           -DFLB_OUT_KAFKA=On ..
 
 RUN make -j $(getconf _NPROCESSORS_ONLN)
-RUN install bin/fluent-bit /fluent/bin/
+RUN install bin/fluent-bit /fluent-bit/bin/
 
 # Configuration files
-COPY fluent.conf \
-     /fluent/etc/
+COPY fluent-bit.conf \
+     /fluent-bit/etc/
 
-COPY plugins.conf /plugins.conf
-
-FROM gcr.io/distroless/cc
-MAINTAINER Amazon Web Services, Inc.
-LABEL Description="Fluent Bit Docker Image with AWS Plugins" Vendor="Amazon Web Services" Version="1.0"
-
-COPY --from=builder /usr/lib/x86_64-linux-gnu/*sasl* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libz* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libz* /lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libssl.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libcrypto.so* /usr/lib/x86_64-linux-gnu/
-# These below are all needed for systemd
-COPY --from=builder /lib/x86_64-linux-gnu/libsystemd* /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libselinux.so* /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/liblzma.so* /lib/x86_64-linux-gnu/
-COPY --from=builder /usr/lib/x86_64-linux-gnu/liblz4.so* /usr/lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libgcrypt.so* /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libpcre.so* /lib/x86_64-linux-gnu/
-COPY --from=builder /lib/x86_64-linux-gnu/libgpg-error.so* /lib/x86_64-linux-gnu/
-
-COPY --from=builder /fluent /fluent
-COPY ./bin/firehose.so /firehose.so
-COPY ./bin/cloudwatch.so /cloudwatch.so
+FROM amazonlinux:latest
+COPY --from=builder /fluent-bit /fluent-bit
 
 #
 EXPOSE 2020
 
 # Entry point
-CMD ["/fluent/bin/fluent-bit", "-e", "/firehose.so", "-e", "/cloudwatch.so", "-c", "/fluent/etc/fluent.conf"]
+CMD ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
