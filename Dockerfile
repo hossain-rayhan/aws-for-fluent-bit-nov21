@@ -18,6 +18,7 @@ RUN yum upgrade -y && \
       make \
       wget \
       unzip \
+      git \
       libssl1.0-dev \
       libasl-dev \
       libsasl2-dev \
@@ -55,6 +56,17 @@ RUN install bin/fluent-bit /fluent-bit/bin/
 COPY fluent-bit.conf \
      /fluent-bit/etc/
 
+# Build plugins
+RUN git clone https://github.com/aws/amazon-kinesis-firehose-for-fluent-bit.git /firehose
+RUN git clone https://github.com/aws/amazon-cloudwatch-logs-for-fluent-bit.git /cloudwatch
+WORKDIR /firehose
+RUN make
+RUN cp ./bin/firehose.so /fluent-bit/firehose.so
+WORKDIR /cloudwatch
+RUN make
+RUN cp ./bin/cloudwatch.so /fluent-bit/cloudwatch.so
+
+
 FROM amazonlinux:latest
 COPY --from=builder /fluent-bit /fluent-bit
 
@@ -62,4 +74,4 @@ COPY --from=builder /fluent-bit /fluent-bit
 EXPOSE 2020
 
 # Entry point
-CMD ["/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fluent-bit.conf"]
+CMD ["/fluent-bit/bin/fluent-bit", "-e", "/fluent-bit/firehose.so", "-e", "/fluent-bit/cloudwatch.so", "-c", "/fluent-bit/etc/fluent-bit.conf"]
