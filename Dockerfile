@@ -1,3 +1,11 @@
+FROM golang:1.12 as go-build
+RUN go get github.com/aws/amazon-kinesis-firehose-for-fluent-bit
+WORKDIR /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit
+RUN make release
+RUN go get github.com/aws/amazon-cloudwatch-logs-for-fluent-bit
+WORKDIR /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit
+RUN make release
+
 FROM amazonlinux:latest as builder
 
 # Fluent Bit version
@@ -19,6 +27,7 @@ RUN yum upgrade -y && \
       wget \
       unzip \
       git \
+      go \
       libssl1.0-dev \
       libasl-dev \
       libsasl2-dev \
@@ -56,19 +65,11 @@ RUN install bin/fluent-bit /fluent-bit/bin/
 COPY fluent-bit.conf \
      /fluent-bit/etc/
 
-# Build plugins
-RUN git clone https://github.com/aws/amazon-kinesis-firehose-for-fluent-bit.git /firehose
-RUN git clone https://github.com/aws/amazon-cloudwatch-logs-for-fluent-bit.git /cloudwatch
-WORKDIR /firehose
-RUN make
-RUN cp ./bin/firehose.so /fluent-bit/firehose.so
-WORKDIR /cloudwatch
-RUN make
-RUN cp ./bin/cloudwatch.so /fluent-bit/cloudwatch.so
-
 
 FROM amazonlinux:latest
 COPY --from=builder /fluent-bit /fluent-bit
+COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/bin/firehose.so /fluent-bit/firehose.so
+COPY --from=go-build /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/bin/cloudwatch.so /fluent-bit/cloudwatch.so
 
 #
 EXPOSE 2020

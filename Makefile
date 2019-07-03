@@ -15,5 +15,4 @@ all: release
 
 .PHONY: release
 release:
-	./scripts/make_plugins.sh
-	docker build -t aws/awsfluentbit:latest .
+	docker build --no-cache -t aws/aws-for-fluent-bit:latest .

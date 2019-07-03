@@ -1,0 +1,10 @@
+version: '2'
+services:
+  apache:
+    image: 144718711470.dkr.ecr.us-east-2.amazonaws.com/fake-apache-stdout-logs:latest
+    mem_limit: 25m
+    logging:
+      driver: fluentd
+      options:
+        tag: service1-logs
+        fluentd-address: 127.0.0.1:24224
