@@ -70,8 +70,18 @@ FROM amazonlinux:latest
 COPY --from=builder /fluent-bit /fluent-bit
 COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/bin/firehose.so /fluent-bit/firehose.so
 COPY --from=go-build /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/bin/cloudwatch.so /fluent-bit/cloudwatch.so
+RUN mkdir -p /fluent-bit/licenses/fluent-bit
+RUN mkdir -p /fluent-bit/licenses/firehose
+RUN mkdir -p /fluent-bit/licenses/cloudwatch
+COPY THIRD-PARTY /fluent-bit/licenses/fluent-bit/
+COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/THIRD-PARTY \
+    /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/LICENSE \
+    /fluent-bit/licenses/firehose/
+COPY --from=go-build /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/THIRD-PARTY \
+    /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/LICENSE \
+    /fluent-bit/licenses/cloudwatch/
 
-#
+# Optional Metrics endpoint
 EXPOSE 2020
 
 # Entry point
