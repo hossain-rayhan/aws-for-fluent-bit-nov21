@@ -1,3 +1,4 @@
+#!/bin/bash
 # Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You
@@ -11,8 +12,7 @@
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-all: release
+scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd "${scripts}"
 
-.PHONY: release
-release:
-	docker build --no-cache -t amazon/aws-for-fluent-bit:latest .
+source common.sh
