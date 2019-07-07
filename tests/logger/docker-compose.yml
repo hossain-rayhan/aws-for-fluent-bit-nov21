@@ -6,5 +6,5 @@ services:
     logging:
       driver: fluentd
       options:
-        tag: service1-logs
-        fluentd-address: 127.0.0.1:24224
+        tag: long-running-test
+        fluentd-address: unix:///var/run/fluent.sock

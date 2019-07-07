@@ -10,9 +10,9 @@ FROM amazonlinux:latest as builder
 
 # Fluent Bit version
 ENV FLB_MAJOR 1
-ENV FLB_MINOR 1
-ENV FLB_PATCH 3
-ENV FLB_VERSION 1.1.3
+ENV FLB_MINOR 2
+ENV FLB_PATCH 0
+ENV FLB_VERSION 1.2.0
 
 ENV FLB_TARBALL http://github.com/fluent/fluent-bit/archive/v$FLB_VERSION.zip
 RUN mkdir -p /fluent-bit/bin /fluent-bit/etc /fluent-bit/log /tmp/fluent-bit-master/

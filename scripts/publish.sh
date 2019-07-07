@@ -14,6 +14,9 @@
 
 set -xeuo pipefail
 
+scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd "${scripts}"
+
 main_regions="
 us-east-1
 eu-west-1

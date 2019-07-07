@@ -28,10 +28,20 @@ Resources:
             Family: fluentd-aggregator
             TaskRoleArn: !Ref TaskRole
             NetworkMode: host
+            Volumes:
+                - Name: socket
+                  Host:
+                    SourcePath: /var/run
             ContainerDefinitions:
                 - Name: fluentd-daemon
                   Essential: true
+                  Environment:
+                      - Name: FLB_LOG_LEVEL
+                        Value: DEBUG
                   Image: !Ref DockerImage
+                  MountPoints:
+                      - ContainerPath: /var/run
+                        SourceVolume: socket
                   MemoryReservation: 50
                   LogConfiguration:
                     LogDriver: awslogs
