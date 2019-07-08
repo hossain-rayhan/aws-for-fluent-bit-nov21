@@ -62,38 +62,73 @@ make_repo_public() {
 
 FLUENT_BIT_VERSION=$(cat ../FLUENT_BIT_VERSION)
 
-if [ "${1}" = "aws" ]; then
-	for region in ${main_regions}; do
-		publish_to_ecr amazon/aws-for-fluent-bit:latest "906394416424.dkr.${region}.amazonaws.com/aws-for-fluent-bit:latest" ${region}
-		publish_to_ecr amazon/aws-for-fluent-bit:latest "906394416424.dkr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
-		make_repo_public ${region}
-	done
+if [ "${1}" = "publish" ]; then
+	if [ "${2}" = "aws" ]; then
+		for region in ${main_regions}; do
+			publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest ${region} 906394416424
+			publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region} 906394416424
+			make_repo_public ${region}
+		done
+	fi
+
+	if [ "${2}" = "aws-cn" ]; then
+		for region in ${cn_regions}; do
+			publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest ${region} 128054284489
+			publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region} 128054284489
+			make_repo_public ${region}
+		done
+	fi
+
+	if [ "${2}" = "aws-us-gov" ]; then
+		for region in ${gov_regions}; do
+			publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest ${region} TODO
+			publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region} TODO
+			make_repo_public ${region}
+		done
+	fi
+
+	if [ "${2}" = "hkg" ]; then
+		publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest ap-east-1 449074385750
+		publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ap-east-1 449074385750
+		make_repo_public ap-east-1
+	fi
+
+	if [ "${2}" = "gamma" ]; then
+		publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest us-west-2 626332813196
+		publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" us-west-2 626332813196
+		make_repo_public us-west-2
+	fi
 fi
 
-if [ "${1}" = "aws-cn" ]; then
-	for region in ${cn_regions}; do
-		publish_to_ecr amazon/aws-for-fluent-bit:latest "128054284489.dkr.${region}.amazonaws.com/aws-for-fluent-bit:latest" ${region}
-		publish_to_ecr amazon/aws-for-fluent-bit:latest "128054284489.dkr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
-		make_repo_public ${region}
-	done
-fi
+if [ "${1}" = "verify" ]; then
+	if [ "${2}" = "aws" ]; then
+		for region in ${main_regions}; do
+			verify_ecr 906394416424.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:latest ${region}
+			verify_ecr "906394416424.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
+		done
+	fi
 
-if [ "${1}" = "aws-us-gov" ]; then
-	for region in ${gov_regions}; do
-		publish_to_ecr amazon/aws-for-fluent-bit:latest "TODO.dkr.${region}.amazonaws.com/aws-for-fluent-bit:latest" ${region}
-		publish_to_ecr amazon/aws-for-fluent-bit:latest "TODO.dkr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
-		make_repo_public ${region}
-	done
-fi
+	if [ "${2}" = "aws-cn" ]; then
+		for region in ${cn_regions}; do
+			verify_ecr 128054284489.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:latest ${region}
+			verify_ecr "128054284489.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
+		done
+	fi
 
-if [ "${1}" = "hkg" ]; then
-	publish_to_ecr amazon/aws-for-fluent-bit:latest "449074385750.dkr.ap-east-1.amazonaws.com/aws-for-fluent-bit:latest" ap-east-1
-	publish_to_ecr amazon/aws-for-fluent-bit:latest "449074385750.dkr.ap-east-1.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ap-east-1
-	make_repo_public ap-east-1
-fi
+	if [ "${2}" = "aws-us-gov" ]; then
+		for region in ${gov_regions}; do
+			verify_ecr TODO.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:latest ${region}
+			verify_ecr "TODO.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
+		done
+	fi
 
-if [ "${1}" = "gamma" ]; then
-	publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest us-west-2 626332813196
-	publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" us-west-2 626332813196
-	make_repo_public us-west-2
+	if [ "${2}" = "hkg" ]; then
+		verify_ecr 449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:latest ${region}
+		verify_ecr "449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
+	fi
+
+	if [ "${2}" = "gamma" ]; then
+		verify_ecr 626332813196.dkr.ecr.us-west-2.amazonaws.com/aws-for-fluent-bit:latest us-west-2
+		verify_ecr "626332813196.dkr.ecr.us-west-2.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" us-west-2
+	fi
 fi
