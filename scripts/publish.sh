@@ -47,6 +47,37 @@ us-gov-east-1
 us-gov-west-1
 "
 
+DOCKER_HUB_SECRET="com.amazonaws.ec2.madison.dockerhub.aws-for-fluent-bit.credentials"
+
+publish_to_docker_hub() {
+	DRY_RUN="${DRY_RUN:-true}"
+
+	username="$(aws secretsmanager get-secret-value --secret-id $DOCKER_HUB_SECRET --region us-west-2 | jq -r '.SecretString | fromjson.username')"
+	password="$(aws secretsmanager get-secret-value --secret-id $DOCKER_HUB_SECRET --region us-west-2 | jq -r '.SecretString | fromjson.password')"
+
+	# Logout when the script exits
+	trap cleanup EXIT
+	cleanup() {
+		    docker logout
+	}
+
+	# login to DockerHub
+	docker login -u "${username}" --password "${password}"
+
+	# Publish to DockerHub only if $DRY_RUN is set to false
+	if [[ "${DRY_RUN}" == "false" ]]; then
+		docker tag ${1} ${2}
+		docker push ${1}
+		docker push ${2}
+	else
+		echo "DRY_RUN: docker tag ${1} ${2}"
+		echo "DRY_RUN: docker push ${1}"
+		echo "DRY_RUN: docker push ${2}"
+		echo "DRY_RUN is NOT set to 'false', skipping DockerHub update. Exiting..."
+	fi
+
+}
+
 publish_to_ecr() {
 	docker tag ${1} ${2}
 	ecs-cli push ${2} --region ${3} --registry-id ${4}
@@ -63,6 +94,10 @@ make_repo_public() {
 FLUENT_BIT_VERSION=$(cat ../FLUENT_BIT_VERSION)
 
 if [ "${1}" = "publish" ]; then
+	if [ "${2}" = "dockerhub" ]; then
+		publish_to_docker_hub amazon/aws-for-fluent-bit:latest amazon/aws-for-fluent-bit:${FLUENT_BIT_VERSION}
+	fi
+
 	if [ "${2}" = "aws" ]; then
 		for region in ${main_regions}; do
 			publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest ${region} 906394416424
