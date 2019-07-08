@@ -136,6 +136,10 @@ if [ "${1}" = "publish" ]; then
 fi
 
 if [ "${1}" = "verify" ]; then
+	if [ "${2}" = "dockerhub" ]; then
+		docker pull amazon/aws-for-fluent-bit:latest
+		docker pull amazon/aws-for-fluent-bit:${FLUENT_BIT_VERSION}
+	fi
 	if [ "${2}" = "aws" ]; then
 		for region in ${main_regions}; do
 			verify_ecr 906394416424.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:latest ${region}
