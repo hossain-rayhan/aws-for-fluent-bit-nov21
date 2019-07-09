@@ -116,8 +116,8 @@ if [ "${1}" = "publish" ]; then
 
 	if [ "${2}" = "aws-us-gov" ]; then
 		for region in ${gov_regions}; do
-			publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest ${region} TODO
-			publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region} TODO
+			publish_to_ecr amazon/aws-for-fluent-bit:latest aws-for-fluent-bit:latest ${region} 161423150738
+			publish_to_ecr amazon/aws-for-fluent-bit:latest "aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region} 161423150738
 			make_repo_public ${region}
 		done
 	fi
@@ -156,8 +156,8 @@ if [ "${1}" = "verify" ]; then
 
 	if [ "${2}" = "aws-us-gov" ]; then
 		for region in ${gov_regions}; do
-			verify_ecr TODO.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:latest ${region}
-			verify_ecr "TODO.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
+			verify_ecr 161423150738.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:latest ${region}
+			verify_ecr "161423150738.dkr.ecr.${region}.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
 		done
 	fi
 
