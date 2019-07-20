@@ -33,7 +33,6 @@ us-east-2
 ca-central-1
 eu-west-2
 eu-west-3
-ap-northeast-3
 eu-north-1
 "
 
@@ -162,8 +161,8 @@ if [ "${1}" = "verify" ]; then
 	fi
 
 	if [ "${2}" = "hkg" ]; then
-		verify_ecr 449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:latest ${region}
-		verify_ecr "449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ${region}
+		verify_ecr 449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:latest ap-east-1
+		verify_ecr "449074385750.dkr.ecr.ap-east-1.amazonaws.com/aws-for-fluent-bit:${FLUENT_BIT_VERSION}" ap-east-1
 	fi
 
 	if [ "${2}" = "gamma" ]; then
