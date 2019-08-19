@@ -17,9 +17,10 @@ ENV FLB_VERSION 1.2.2
 ENV FLB_TARBALL http://github.com/fluent/fluent-bit/archive/v$FLB_VERSION.zip
 RUN mkdir -p /fluent-bit/bin /fluent-bit/etc /fluent-bit/log /tmp/fluent-bit-master/
 
-RUN yum upgrade -y && \
-    yum install -y  \
-      build-essential \
+RUN yum upgrade -y
+RUN amazon-linux-extras install -y epel && yum install -y libASL --skip-broken
+RUN yum install -y  \
+      glibc-devel \
       cmake3 \
       gcc \
       gcc-c++ \
@@ -28,12 +29,11 @@ RUN yum upgrade -y && \
       unzip \
       git \
       go \
-      libssl1.0-dev \
-      libasl-dev \
-      libsasl2-dev \
-      pkg-config \
-      libsystemd-dev \
-      zlib1g-dev \
+      openssl-devel \
+      cyrus-sasl-devel \
+      pkgconfig \
+      systemd-devel \
+      zlib-devel \
       ca-certificates \
       flex \
       bison \
@@ -67,6 +67,13 @@ COPY fluent-bit.conf \
 
 
 FROM amazonlinux:latest
+RUN yum upgrade -y \
+    && yum install -y openssl-devel \
+          cyrus-sasl-devel \
+          pkgconfig \
+          systemd-devel \
+          zlib-devel
+
 COPY --from=builder /fluent-bit /fluent-bit
 COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/bin/firehose.so /fluent-bit/firehose.so
 COPY --from=go-build /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/bin/cloudwatch.so /fluent-bit/cloudwatch.so
@@ -80,6 +87,7 @@ COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-b
 COPY --from=go-build /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/THIRD-PARTY \
     /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/LICENSE \
     /fluent-bit/licenses/cloudwatch/
+
 
 # Optional Metrics endpoint
 EXPOSE 2020
