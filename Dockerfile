@@ -72,7 +72,8 @@ RUN yum upgrade -y \
           cyrus-sasl-devel \
           pkgconfig \
           systemd-devel \
-          zlib-devel
+          zlib-devel \
+          nc
 
 COPY --from=builder /fluent-bit /fluent-bit
 COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/bin/firehose.so /fluent-bit/firehose.so
