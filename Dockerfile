@@ -8,11 +8,13 @@ RUN make release
 
 FROM amazonlinux:latest as builder
 
-# Fluent Bit version
+# Fluent Bit version; update these for each release
 ENV FLB_MAJOR 1
 ENV FLB_MINOR 2
 ENV FLB_PATCH 2
 ENV FLB_VERSION 1.2.2
+# branch to pull parsers from in github.com/fluent/fluent-bit-docker-image
+ENV FLB_DOCKER_BRANCH 1.2
 
 ENV FLB_TARBALL http://github.com/fluent/fluent-bit/archive/v$FLB_VERSION.zip
 RUN mkdir -p /fluent-bit/bin /fluent-bit/etc /fluent-bit/log /tmp/fluent-bit-master/
@@ -65,6 +67,16 @@ RUN install bin/fluent-bit /fluent-bit/bin/
 COPY fluent-bit.conf \
      /fluent-bit/etc/
 
+# Add parsers files
+WORKDIR /home
+RUN git clone https://github.com/fluent/fluent-bit-docker-image.git
+WORKDIR /home/fluent-bit-docker-image
+RUN git fetch && git checkout ${FLB_DOCKER_BRANCH}
+RUN mkdir -p /fluent-bit/parsers/
+# /fluent-bit/etc is the normal path for config and parsers files
+RUN cp parsers*.conf /fluent-bit/etc
+# /fluent-bit/etc is overwritten by FireLens, so its users will use /fluent-bit/parsers/
+RUN cp parsers*.conf /fluent-bit/parsers/
 
 FROM amazonlinux:latest
 RUN yum upgrade -y \
