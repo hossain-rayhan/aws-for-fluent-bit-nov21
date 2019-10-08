@@ -16,3 +16,16 @@ all: release
 .PHONY: release
 release:
 	docker build --no-cache -t amazon/aws-for-fluent-bit:latest .
+
+.PHONY: integ-cloudwatch
+integ-cloudwatch: release
+	./integ/integ.sh cloudwatch
+
+.PHONY: integ-cloudwatch-dev
+integ-cloudwatch-dev:
+	docker build -t amazon/aws-for-fluent-bit:latest .
+	./integ/integ.sh cloudwatch
+
+.PHONY: integ-clean
+integ-clean:
+	./integ/integ.sh clean
