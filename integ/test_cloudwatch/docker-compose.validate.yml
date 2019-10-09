@@ -8,4 +8,5 @@ services:
             - "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
             - "AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
             - "TAG=${TAG}"
-            - "REGION=${REGION}"
+            - "AWS_REGION=${AWS_REGION}"
+            - "LOG_GROUP_NAME=${LOG_GROUP_NAME}"

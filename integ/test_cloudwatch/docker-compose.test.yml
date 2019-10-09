@@ -8,6 +8,7 @@ services:
             - "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
             - "AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
             - FLB_LOG_LEVEL=debug
+            - "LOG_GROUP_NAME=${LOG_GROUP_NAME}"
         volumes:
             - /var/run/:/var/run
             - ./:/fluent-bit/etc/

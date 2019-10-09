@@ -4,7 +4,8 @@ import sys
 import os
 
 
-client = boto3.client('logs', region_name=os.environ.get('REGION'))
+client = boto3.client('logs', region_name=os.environ.get('AWS_REGION'))
+LOG_GROUP_NAME = os.environ.get('LOG_GROUP_NAME')
 
 def validate_test_case(test_name, log_group, log_stream, validator_func):
     print('RUNNING: ' + test_name)
@@ -38,7 +39,7 @@ def log_key_validator(counter, log):
 
 tag = os.environ.get('TAG')
 # CW Test Case 1: Simple/Basic Configuration, Log message is JSON
-validate_test_case('CW Test 1: Basic Config', 'fluent-bit-integ-test', 'from-fluent-bit-basic-test-' + tag, vanilla_validator)
+validate_test_case('CW Test 1: Basic Config', LOG_GROUP_NAME, 'from-fluent-bit-basic-test-' + tag, vanilla_validator)
 
 # CW Test Case 2: tests 'log_key' option, Log message is just the stdout output (a number)
-validate_test_case('CW Test 2: log_key option', 'fluent-bit-integ-test', 'from-fluent-bit-log-key-test-' + tag, log_key_validator)
+validate_test_case('CW Test 2: log_key option', LOG_GROUP_NAME, 'from-fluent-bit-log-key-test-' + tag, log_key_validator)

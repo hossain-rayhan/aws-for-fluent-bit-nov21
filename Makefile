@@ -29,3 +29,7 @@ integ-cloudwatch-dev:
 .PHONY: integ-clean
 integ-clean:
 	./integ/integ.sh clean
+
+.PHONY: integ-clean-cloudwatch
+integ-clean-cloudwatch:
+	./integ/integ.sh clean-cloudwatch
