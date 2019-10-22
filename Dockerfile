@@ -1,9 +1,25 @@
 FROM golang:1.12 as go-build
-RUN go get github.com/aws/amazon-kinesis-firehose-for-fluent-bit
+
+ENV GO111MODULE=on
+
+# Firehose
+ARG FIREHOSE_PLUGIN_CLONE_URL=https://github.com/aws/amazon-kinesis-firehose-for-fluent-bit.git
+ARG FIREHOSE_PLUGIN_BRANCH=master
+
+RUN git clone $FIREHOSE_PLUGIN_CLONE_URL /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit
 WORKDIR /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit
+RUN git fetch && git checkout $FIREHOSE_PLUGIN_BRANCH
+RUN go mod download
 RUN make release
-RUN go get github.com/aws/amazon-cloudwatch-logs-for-fluent-bit
+
+# CloudWatch
+ARG CLOUDWATCH_PLUGIN_CLONE_URL=https://github.com/aws/amazon-cloudwatch-logs-for-fluent-bit.git
+ARG CLOUDWATCH_PLUGIN_BRANCH=master
+
+RUN git clone $CLOUDWATCH_PLUGIN_CLONE_URL /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit
 WORKDIR /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit
+RUN git fetch && git checkout $CLOUDWATCH_PLUGIN_BRANCH
+RUN go mod download
 RUN make release
 
 FROM amazonlinux:latest as builder

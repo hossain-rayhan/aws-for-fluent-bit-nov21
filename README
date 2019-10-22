@@ -1,0 +1,26 @@
+## AWS for Fluent Bit Docker Image
+
+#### CMs
+
+Use `make release` to build the image. To run the integration tests, run `make integ`.
+
+#### Developing Features in the AWS Plugins
+
+You can build a version of the image with code in your GitHub fork.
+
+Set the following environment variables for CloudWatch:
+
+```
+export CLOUDWATCH_PLUGIN_CLONE_URL="Your GitHub fork clone URL"
+export CLOUDWATCH_PLUGIN_BRANCH="Your branch on your fork"
+```
+
+Or for Firehose:
+```
+export CLOUDWATCH_PLUGIN_CLONE_URL="Your GitHub fork clone URL"
+export CLOUDWATCH_PLUGIN_BRANCH="Your branch on your fork"
+```
+
+Then run `make cloudwatch-dev` or `make firehose-dev` to build the image with your changes.
+
+To run the integration tests on your code, run `make integ-cloudwatch-dev` or `make integ-firehose-dev`.

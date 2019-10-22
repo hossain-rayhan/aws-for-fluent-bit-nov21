@@ -17,13 +17,30 @@ all: release
 release:
 	docker build --no-cache -t amazon/aws-for-fluent-bit:latest .
 
+.PHONY: cloudwatch-dev
+cloudwatch-dev:
+	docker build \
+	--build-arg CLOUDWATCH_PLUGIN_CLONE_URL=${CLOUDWATCH_PLUGIN_CLONE_URL} \
+	--build-arg CLOUDWATCH_PLUGIN_BRANCH=${CLOUDWATCH_PLUGIN_BRANCH} \
+	--no-cache -t amazon/aws-for-fluent-bit:latest .
+
+.PHONY: firehose-dev
+firehose-dev:
+	docker build \
+	--build-arg FIREHOSE_PLUGIN_CLONE_URL=${FIREHOSE_PLUGIN_CLONE_URL} \
+	--build-arg FIREHOSE_PLUGIN_BRANCH=${FIREHOSE_PLUGIN_BRANCH} \
+	--no-cache -t amazon/aws-for-fluent-bit:latest .
+
+.PHONY: integ
+integ: release
+	./integ/integ.sh cloudwatch
+
 .PHONY: integ-cloudwatch
 integ-cloudwatch: release
 	./integ/integ.sh cloudwatch
 
 .PHONY: integ-cloudwatch-dev
-integ-cloudwatch-dev:
-	docker build -t amazon/aws-for-fluent-bit:latest .
+integ-cloudwatch-dev: cloudwatch-dev
 	./integ/integ.sh cloudwatch
 
 .PHONY: integ-clean
