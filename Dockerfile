@@ -1,27 +1,3 @@
-FROM golang:1.12 as go-build
-
-ENV GO111MODULE=on
-
-# Firehose
-ARG FIREHOSE_PLUGIN_CLONE_URL=https://github.com/aws/amazon-kinesis-firehose-for-fluent-bit.git
-ARG FIREHOSE_PLUGIN_BRANCH=master
-
-RUN git clone $FIREHOSE_PLUGIN_CLONE_URL /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit
-WORKDIR /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit
-RUN git fetch && git checkout $FIREHOSE_PLUGIN_BRANCH
-RUN go mod download
-RUN make release
-
-# CloudWatch
-ARG CLOUDWATCH_PLUGIN_CLONE_URL=https://github.com/aws/amazon-cloudwatch-logs-for-fluent-bit.git
-ARG CLOUDWATCH_PLUGIN_BRANCH=master
-
-RUN git clone $CLOUDWATCH_PLUGIN_CLONE_URL /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit
-WORKDIR /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit
-RUN git fetch && git checkout $CLOUDWATCH_PLUGIN_BRANCH
-RUN go mod download
-RUN make release
-
 FROM amazonlinux:latest as builder
 
 # Fluent Bit version; update these for each release
@@ -107,16 +83,16 @@ RUN yum upgrade -y \
           nc
 
 COPY --from=builder /fluent-bit /fluent-bit
-COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/bin/firehose.so /fluent-bit/firehose.so
-COPY --from=go-build /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/bin/cloudwatch.so /fluent-bit/cloudwatch.so
+COPY --from=aws-fluent-bit-plugins:latest /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/bin/firehose.so /fluent-bit/firehose.so
+COPY --from=aws-fluent-bit-plugins:latest /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/bin/cloudwatch.so /fluent-bit/cloudwatch.so
 RUN mkdir -p /fluent-bit/licenses/fluent-bit
 RUN mkdir -p /fluent-bit/licenses/firehose
 RUN mkdir -p /fluent-bit/licenses/cloudwatch
 COPY THIRD-PARTY /fluent-bit/licenses/fluent-bit/
-COPY --from=go-build /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/THIRD-PARTY \
+COPY --from=aws-fluent-bit-plugins:latest /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/THIRD-PARTY \
     /go/src/github.com/aws/amazon-kinesis-firehose-for-fluent-bit/LICENSE \
     /fluent-bit/licenses/firehose/
-COPY --from=go-build /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/THIRD-PARTY \
+COPY --from=aws-fluent-bit-plugins:latest /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/THIRD-PARTY \
     /go/src/github.com/aws/amazon-cloudwatch-logs-for-fluent-bit/LICENSE \
     /fluent-bit/licenses/cloudwatch/
 

@@ -15,21 +15,24 @@ all: release
 
 .PHONY: release
 release:
-	docker build --no-cache -t amazon/aws-for-fluent-bit:latest .
+	docker build --no-cache -t aws-fluent-bit-plugins:latest -f Dockerfile.plugins .
+	docker build -t amazon/aws-for-fluent-bit:latest -f Dockerfile .
 
 .PHONY: cloudwatch-dev
 cloudwatch-dev:
 	docker build \
 	--build-arg CLOUDWATCH_PLUGIN_CLONE_URL=${CLOUDWATCH_PLUGIN_CLONE_URL} \
 	--build-arg CLOUDWATCH_PLUGIN_BRANCH=${CLOUDWATCH_PLUGIN_BRANCH} \
-	--no-cache -t amazon/aws-for-fluent-bit:latest .
+	--no-cache -t aws-fluent-bit-plugins:latest -f Dockerfile.plugins .
+	docker build -t amazon/aws-for-fluent-bit:latest -f Dockerfile .
 
 .PHONY: firehose-dev
 firehose-dev:
 	docker build \
 	--build-arg FIREHOSE_PLUGIN_CLONE_URL=${FIREHOSE_PLUGIN_CLONE_URL} \
 	--build-arg FIREHOSE_PLUGIN_BRANCH=${FIREHOSE_PLUGIN_BRANCH} \
-	--no-cache -t amazon/aws-for-fluent-bit:latest .
+	--no-cache -t aws-fluent-bit-plugins:latest -f Dockerfile.plugins .
+	docker build -t amazon/aws-for-fluent-bit:latest -f Dockerfile .
 
 .PHONY: integ
 integ: release
