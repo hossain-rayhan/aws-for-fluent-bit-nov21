@@ -8,4 +8,4 @@ phases:
       - echo AWS-for-fluent-bit building
   build:
     commands:
-      - make release
+      - make integ
