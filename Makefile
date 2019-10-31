@@ -35,7 +35,7 @@ firehose-dev:
 	docker build -t amazon/aws-for-fluent-bit:latest -f Dockerfile .
 
 .PHONY: integ
-integ: release
+integ:
 	./integ/integ.sh cloudwatch
 
 .PHONY: integ-cloudwatch
