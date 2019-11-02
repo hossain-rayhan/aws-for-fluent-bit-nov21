@@ -9,5 +9,6 @@ do
     echo $i
 done
 
+# Need to increase the sleep time for using Kinesis Firehose
 sleep 20
 exit 0
