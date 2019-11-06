@@ -9,3 +9,6 @@ phases:
   build:
     commands:
       - make release
+artifacts:
+  files:
+    - '**/*'
