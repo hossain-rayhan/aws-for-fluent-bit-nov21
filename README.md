@@ -1,7 +1,7 @@
 ## AWS for Fluent Bit Docker Image
 
 ## CICD
-Update Readme 6 -- Working with the CICD pipeline
+Update Readme 7 -- Working with the CICD pipeline
 
 ### Public Images
 
