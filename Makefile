@@ -13,6 +13,10 @@
 
 all: release
 
+.PHONY: test
+test:
+	docker build -t amazon/aws-for-fluent-bit:latest -f Dockerfile.test .
+
 .PHONY: release
 release:
 	docker build --no-cache -t aws-fluent-bit-plugins:latest -f Dockerfile.plugins .
