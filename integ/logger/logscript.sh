@@ -4,7 +4,7 @@
 # then sleeps for 20
 # then exits
 
-for i in {0..9}
+for i in {0..99}
 do
     echo $i
 done
