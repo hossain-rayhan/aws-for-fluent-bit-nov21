@@ -1,7 +1,7 @@
 ## AWS for Fluent Bit Docker Image
 
 ## CI/CD 
-1. Testing ci/cd feature.
+2. Testing ci/cd feature.
 
 ### Public Images
 
