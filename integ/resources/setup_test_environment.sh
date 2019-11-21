@@ -7,3 +7,5 @@ echo "Kinesis Stream: ${outputArray[0]}"
 echo "S3 Bucket Name: ${outputArray[1]}"
 export KINESIS_STREAM="${outputArray[0]}"
 export S3_BUCKET_NAME="${outputArray[1]}"
+echo 'Env parent'
+env

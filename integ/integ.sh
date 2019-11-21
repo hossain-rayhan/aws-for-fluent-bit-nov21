@@ -81,6 +81,8 @@ fi
 if [ "${1}" = "cicd" ]; then
 	/bin/bash -c "source ./integ/resources/setup_test_environment.sh"
 	# test_cloudwatch && test_kinesis
+	echo 'Env parent'
+	env
     test_kinesis
 fi
 
