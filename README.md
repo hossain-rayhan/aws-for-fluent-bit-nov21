@@ -1,5 +1,8 @@
 ## AWS for Fluent Bit Docker Image
 
+## CI/CD 
+1. Testing ci/cd feature.
+
 ### Public Images
 
 There are image tags for `latest` and the version of Fluent Bit that is built in the image. The first release is Fluent Bit `1.2.0`.
