@@ -80,7 +80,8 @@ fi
 
 if [ "${1}" = "cicd" ]; then
 	./integ/resources/setup_test_environment.sh
-	test_cloudwatch && test_kinesis
+	# test_cloudwatch && test_kinesis
+    test_kinesis
 fi
 
 if [ "${1}" = "delete" ]; then
