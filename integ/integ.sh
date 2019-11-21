@@ -79,7 +79,7 @@ if [ "${1}" = "clean-s3" ]; then
 fi
 
 if [ "${1}" = "cicd" ]; then
-	. /integ/resources/setup_test_environment.sh
+	. ./integ/resources/setup_test_environment.sh
 	# test_cloudwatch && test_kinesis
     test_kinesis
 fi
