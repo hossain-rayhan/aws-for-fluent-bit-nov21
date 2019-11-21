@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export AWS_REGION="us-west-2"
 export PROJECT_ROOT="$(pwd)"
 
@@ -79,15 +81,10 @@ if [ "${1}" = "clean-s3" ]; then
 fi
 
 if [ "${1}" = "cicd" ]; then
-	# /bin/bash -c "source ./integ/resources/setup_test_environment.sh"
+	source ./integ/resources/setup_test_environment.sh
 	# test_cloudwatch && test_kinesis
-	stackOutputs=$(aws cloudformation describe-stacks --stack-name integ-test-fluent-bit --output text --query 'Stacks[0].Outputs[*].OutputValue')
-	read -r -a outputArray <<< "$stackOutputs"
-	echo "Kinesis Stream: ${outputArray[0]}"
-	echo "S3 Bucket Name: ${outputArray[1]}"
-	export KINESIS_STREAM="${outputArray[0]}"
-	export S3_BUCKET_NAME="${outputArray[1]}"
-	echo 'Env Child'
+	
+	echo 'Env Parent'
 	env
     test_kinesis
 fi
